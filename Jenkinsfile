@@ -14,7 +14,7 @@ pipeline {
                 echo "clean complete"
             }
         }
-/*
+
         stage("Clean") {
             steps {
                 shell ./gradew clean
@@ -53,7 +53,7 @@ pipeline {
 }
 
 /*
-def shell() {
+def shell(command) {
     if (isUnix()) {
         sh command
     } else {
