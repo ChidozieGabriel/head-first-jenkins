@@ -15,13 +15,6 @@ pipeline {
             }
         }
 
-        stage("Clean") {
-            steps {
-                shell "./gradew clean"
-                echo "clean complete"
-            }
-        }
-
         stage("Build") {
             parallel {
                 stage("Assemble") {
