@@ -7,6 +7,13 @@ pipeline {
                 echo "Signal sent"
             }
         }
+
+        stage("Clean") {
+            steps {
+                shell ./gradew clean
+                echo "clean complete"
+            }
+        }
 /*
         stage("Clean") {
             steps {
