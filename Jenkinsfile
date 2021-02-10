@@ -7,7 +7,7 @@ pipeline {
                 echo "Signal sent"
             }
         }
-
+/*
         stage("Clean") {
             steps {
                 shell ./gradew clean
@@ -30,8 +30,10 @@ pipeline {
                 }
             }
         }
+        */
     }
 
+/*
     post {
         unsuccessful {
             sendMail("subm", "kdkdk")
@@ -40,8 +42,10 @@ pipeline {
             sendMail("Fixed build", "blah")
         }
     }
+    */
 }
 
+/*
 def shell() {
     if (isUnix()) {
         sh command
@@ -55,3 +59,4 @@ def sendMail(subject, body) {
         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
         body: body
 }
+*/
