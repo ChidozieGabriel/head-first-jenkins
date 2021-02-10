@@ -30,22 +30,6 @@ pipeline {
                 }
             }
         }
-
-        stage("Test") {
-            parallel {
-                stage("Unit") {
-                    steps {
-                        shell ./gradlew testDebugUnitTest
-                    }
-                }
-
-                stage("Integration") {
-                    steps {
-                        echo "integration test successful"
-                    }
-                }
-            }
-        }
     }
 
     post {
