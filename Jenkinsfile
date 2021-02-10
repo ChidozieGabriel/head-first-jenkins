@@ -7,6 +7,7 @@ pipeline {
                 echo "Signal sent"
             }
         }
+/*
         stage("Clean") {
             steps {
                 shell ./gradew clean
@@ -14,7 +15,6 @@ pipeline {
             }
         }
 
-/*
         stage("Build") {
             parallel {
                 stage("Assemble") {
