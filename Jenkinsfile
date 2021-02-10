@@ -37,12 +37,6 @@ pipeline {
                     steps {
                         shell ./gradlew testDebugUnitTest
                     }
-
-                    post {
-                        always {
-                            junit 'app/build/test-results/testDebugUnitTest'
-                        }
-                    }
                 }
 
                 stage("Integration") {
