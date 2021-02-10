@@ -37,10 +37,8 @@ pipeline {
                 }
             }
         }
-        */
     }
 
-/*
     post {
         unsuccessful {
             sendMail("subm", "kdkdk")
@@ -49,10 +47,8 @@ pipeline {
             sendMail("Fixed build", "blah")
         }
     }
-    */
 }
 
-/*
 def shell(command) {
     if (isUnix()) {
         sh command
@@ -66,4 +62,3 @@ def sendMail(subject, body) {
         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
         body: body
 }
-*/
