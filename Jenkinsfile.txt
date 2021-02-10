@@ -1,0 +1,121 @@
+pipeline {
+  agent any
+
+  environment {
+    FIXED_MAIL_SUBJECT = "Fixed Build"
+    FIXED_MAIL_SUB_TEXT = "Your build is fixed."
+
+    ERROR_MAIL_SUBJECT = "Failed Build"
+    ERROR_MAIL_SUB_TEXT = "Your build failed."
+
+    MAIL_CONTENT = """
+
+Branch: ${env.BRANCH_NAME}
+
+Branch Url: ${env.GIT_URL}/branch/${env.GIT_BRANCH}
+
+Build: ${env.BUILD_URL}
+
+    """
+    UNIT_TEST_DIR = '**/build/test-results/test*/TEST-*.xml'
+    INTEGRATION_TEST_DIR = '**/build/outputs/androidTest-results/connected/flavors/*/TEST-*.xml'
+
+    ANDROID_HOME = '/opt/android'
+    PATH = "/usr/local/bin:$ANDROID_HOME/tools/bin:$PATH"
+  }
+
+  options {
+    parallelsAlwaysFailFast()
+    disableConcurrentBuilds()
+  }
+
+  stages {
+    stage('Clean') {
+      steps {
+        bitbucketStatusNotify(buildState: 'INPROGRESS')
+	    shell('chmod +x gradlew')
+        shell('./gradlew clean')
+      }
+    }
+
+    stage('Build') {
+      parallel {
+        stage('Assemble') {
+          steps {
+            shell('./gradlew assembleDevDebug')
+          }
+        }
+        stage('Lint') {
+          steps {
+            shell('./gradlew ktlint')
+          }
+          post {
+            always {
+              archiveArtifacts artifacts: '**/build/ktlint/*.html'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Tests') {
+      parallel {
+        stage('Integration Tests') {
+          steps {
+            echo "integration test is disabled"
+            // shell('bundle exec fastlane integration')
+          }
+          post {
+            always {
+              echo "report integration test is disabled"
+              // reportTest env.INTEGRATION_TEST_DIR
+            }
+          }
+        }
+
+        stage('Unit Tests') {
+          steps {
+            shell('./gradlew testDevDebugUnitTest --continue')
+          }
+          post {
+            always {
+              reportTest env.UNIT_TEST_DIR
+            }
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      bitbucketStatusNotify(buildState: 'SUCCESSFUL')
+    }
+    unsuccessful {
+      bitbucketStatusNotify(buildState: 'FAILED')
+      mailReport(env.ERROR_MAIL_SUBJECT, env.ERROR_MAIL_SUB_TEXT)
+    }
+    fixed {
+      mailReport(env.FIXED_MAIL_SUBJECT, env.FIXED_MAIL_SUB_TEXT)
+    }
+  }
+}
+
+// fix windows shell problem
+def shell(String command) {
+  if (isUnix()) {
+    sh command
+  } else {
+    bat command
+  }
+}
+
+def reportTest(String path) {
+    junit skipPublishingChecks: true, testResults: path
+}
+
+def mailReport(subject, subText) {
+  emailext subject: subject,
+    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+    body: "$subText $MAIL_CONTENT"
+}
