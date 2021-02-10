@@ -10,7 +10,7 @@ pipeline {
 
         stage("Clean") {
             steps {
-                shell ".\gradew clean"
+                shell "gradew clean"
                 echo "clean complete"
             }
         }
